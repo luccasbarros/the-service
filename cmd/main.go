@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/luccasbarros/the-service/internal/data"
 )
 
 func (a *API) HandlerTest(w http.ResponseWriter, r *http.Request) {
@@ -20,17 +23,20 @@ func (a *API) Routes() http.Handler {
 }
 
 type API struct {
-	conf   *Config
 	server *http.Server
 	logger *log.Logger
+	db *pgxpool.Pool
 }
 
-func NewApi(conf *Config) *API {
-	// db := postgres.NewPool(conf.Database.URI)
+func NewApi() *API {
+	db, err := data.InitPool()
+	if err != nil {
+		log.Fatalf("init pool error %v", err)
+	}
 
 	api := &API{
-		conf:   conf,
 		logger: log.New(os.Stdout, "[SERVER] ", log.Ldate|log.Ltime),
+		db: db,
 	}
 
 	api.server = &http.Server{
@@ -40,18 +46,14 @@ func NewApi(conf *Config) *API {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	return nil
+	return api
 }
 
 func main() {
-	conf := NewConfig()
-	api := NewApi(conf)
-	fmt.Println("Server is running on http://localhost:8080")
+	api := NewApi()
+
+	api.logger.Println("Server is running on http://localhost:8080")
+	
 	http.ListenAndServe(api.server.Addr, api.server.Handler)
-
-	// Define a request handler function
-
-	// srv.logger.Println("Server is running")
-
-	// log.Fatal(srv.httpServer.ListenAndServe())
+	
 }

@@ -1,2 +1,3 @@
 .env
+.envrc
 docker-compose.yaml
