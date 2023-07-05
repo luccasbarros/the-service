@@ -8,28 +8,50 @@ import (
 	"time"
 )
 
-type server struct {
-	logger     *log.Logger
-	httpServer *http.Server
+func (a *API) HandlerTest(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, "Home Page")
 }
 
-func main() {
-	// Define a request handler function
-	handler := func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello, World!")
-	}
+func (a *API) Routes() http.Handler {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", a.HandlerTest)
 
-	srv := server{
-		httpServer: &http.Server{
-			Handler:           http.HandlerFunc(handler),
-			Addr:              "localhost:8080",
-			ReadTimeout:       10 * time.Second,
-			ReadHeaderTimeout: 5 * time.Second,
-		},
+	return mux
+}
+
+type API struct {
+	conf   *Config
+	server *http.Server
+	logger *log.Logger
+}
+
+func NewApi(conf *Config) *API {
+	// db := postgres.NewPool(conf.Database.URI)
+
+	api := &API{
+		conf:   conf,
 		logger: log.New(os.Stdout, "[SERVER] ", log.Ldate|log.Ltime),
 	}
 
-	srv.logger.Println("Server is running")
+	api.server = &http.Server{
+		Handler:           api.Routes(),
+		Addr:              "localhost:8080",
+		ReadTimeout:       10 * time.Second,
+		ReadHeaderTimeout: 5 * time.Second,
+	}
 
-	log.Fatal(srv.httpServer.ListenAndServe())
+	return nil
+}
+
+func main() {
+	conf := NewConfig()
+	api := NewApi(conf)
+	fmt.Println("Server is running on http://localhost:8080")
+	http.ListenAndServe(api.server.Addr, api.server.Handler)
+
+	// Define a request handler function
+
+	// srv.logger.Println("Server is running")
+
+	// log.Fatal(srv.httpServer.ListenAndServe())
 }
