@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -9,18 +8,9 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/luccasbarros/the-service/internal/data"
+	"github.com/luccasbarros/the-service/router"
 )
 
-func (a *API) HandlerTest(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Home Page")
-}
-
-func (a *API) Routes() http.Handler {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", a.HandlerTest)
-
-	return mux
-}
 
 type API struct {
 	server *http.Server
@@ -40,7 +30,7 @@ func NewApi() *API {
 	}
 
 	api.server = &http.Server{
-		Handler:           api.Routes(),
+		Handler:           router.NewRouter(),
 		Addr:              "localhost:8080",
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
