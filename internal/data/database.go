@@ -7,7 +7,7 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	env "github.com/luccasbarros/the-service/pkg"
+	env "github.com/luccasbarros/the-service/pkg/env"
 )
 
 func InitPool() (*pgxpool.Pool, error) {
