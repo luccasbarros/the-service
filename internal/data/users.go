@@ -2,22 +2,11 @@ package data
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/luccasbarros/the-service/internal/dto"
 )
 
-type UsersRepository struct {
-	db *sql.DB
-}
-
-func NewUserRepository(db *sql.DB) *UsersRepository {
-	return &UsersRepository{
-		db: db,
-	}
-}
-
-func (ur *UsersRepository) GetAllUsers(ctx context.Context, limit, page uint64) ([]dto.User, error) {
+func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]dto.User, error) {
 	offset := (page - 1) * limit
 
 	stmt := qb.
@@ -31,7 +20,7 @@ func (ur *UsersRepository) GetAllUsers(ctx context.Context, limit, page uint64) 
 		return nil, err
 	}
 
-	rows, err := ur.db.QueryContext(ctx, sql, args...)
+	rows, err := ur.db.Query(ctx, sql, args...)
 	if err != nil {
 		return nil, err
 	}

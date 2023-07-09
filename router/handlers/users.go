@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/luccasbarros/the-service/internal/data"
 	"github.com/luccasbarros/the-service/internal/dto"
 	"github.com/luccasbarros/the-service/pkg/errors"
 )
@@ -19,9 +20,9 @@ type UserRepository interface {
 	GetAllUsers(ctx context.Context, limit, page uint64) ([]dto.User, error)
 }
 
-func NewUsersHandler(repository UserRepository) *UsersHandler {
+func NewUsersHandler(dal *data.Data) *UsersHandler {
 	return &UsersHandler{
-		repository: repository,
+		repository: dal,
 	}
 }
 

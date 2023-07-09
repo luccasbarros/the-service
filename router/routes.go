@@ -2,66 +2,84 @@ package router
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/luccasbarros/the-service/internal/data"
+	"github.com/luccasbarros/the-service/pkg/errors"
+	"github.com/luccasbarros/the-service/router/handlers"
 )
 
 const paramPattern = "([^/]+)"
 const uuidPattern = "([a-fA-F0-9-]+)"
 
-func NewRouter() http.Handler {
-	return http.HandlerFunc(Serve)
+type AppHandler struct {
+	UsersHandler *handlers.UsersHandler
+	// others handlers
 }
 
-func HomeHandler(w http.ResponseWriter, h *http.Request) {
-  fmt.Fprint(w, "Home")
-}
+func NewHandler(dal *data.Data) http.Handler {
+	appHandler := &AppHandler{
+		UsersHandler: handlers.NewUsersHandler(dal),
+	}
 
-var routes = []route{
-  newRoute("GET", "/", HomeHandler),
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		Serve(w, r, appHandler)
+	})
 }
 
 func newRoute(method, pattern string, handler http.HandlerFunc) route {
-  return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
+	return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
+}
+
+func setupUserRouter(handler *handlers.UsersHandler) []route {
+	var routes = []route{
+		newRoute("GET", "/", handler.GetAllUsersHandler),
+	}
+
+	return routes
 }
 
 type route struct {
-  method  string
-  regex   *regexp.Regexp
-  handler http.HandlerFunc
+	method  string
+	regex   *regexp.Regexp
+	handler http.HandlerFunc
 }
 
-func Serve(w http.ResponseWriter, r *http.Request) {
-  var allow []string
+func Serve(w http.ResponseWriter, r *http.Request, appHandler *AppHandler) {
+	var allow []string
 
-  for _, route := range routes {
-    matches := route.regex.FindStringSubmatch(r.URL.Path)
-    if len(matches) > 0 {
-      if r.Method != route.method {
-        allow = append(allow, route.method)
-        continue
-      }
+	routes := []route{}
 
-      ctx := context.WithValue(r.Context(), ctxKey{}, matches[:1])
-      route.handler(w, r.WithContext(ctx))
-      return
-    }
-  }
+	//users
+	routes = append(routes, setupUserRouter(appHandler.UsersHandler)...)
 
-  if len(allow) > 0 {
-    w.Header().Set("Allow", strings.Join(allow, ","))
-    http.Error(w, "405 method not allowed", http.StatusMethodNotAllowed)
-  }
+	for _, route := range routes {
+		matches := route.regex.FindStringSubmatch(r.URL.Path)
+		if len(matches) > 0 {
+			if r.Method != route.method {
+				allow = append(allow, route.method)
+				continue
+			}
 
-  http.NotFound(w, r)
+			ctx := context.WithValue(r.Context(), ctxKey{}, matches[:1])
+			route.handler(w, r.WithContext(ctx))
+			return
+		}
+	}
+
+	if len(allow) > 0 {
+		w.Header().Set("Allow", strings.Join(allow, ","))
+		errors.RespondError(w, http.StatusMethodNotAllowed, "Method not allowed")
+	}
+
+	errors.RespondError(w, http.StatusNotFound, "Not found")
 }
 
 type ctxKey struct{}
 
-func getFields(r *http.Request, index int) string {
-  fields := r.Context().Value(ctxKey{}).([]string)
-  return fields[index]
+func GetFields(r *http.Request, index int) string {
+	fields := r.Context().Value(ctxKey{}).([]string)
+	return fields[index]
 }
-
