@@ -14,6 +14,7 @@ type ErrorResponse struct {
 	StatusCode int    `json:"status"`
 }
 
+
 func RespondError(w http.ResponseWriter, statusCode int, message string) {
 	errorResponse := &ErrorResponse{
 		Message:    message,

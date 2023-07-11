@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -10,6 +9,7 @@ import (
 	"github.com/luccasbarros/the-service/internal/data"
 	"github.com/luccasbarros/the-service/internal/dto"
 	"github.com/luccasbarros/the-service/pkg/errors"
+	req "github.com/luccasbarros/the-service/pkg/http"
 )
 
 type UsersHandler struct {
@@ -47,13 +47,5 @@ func (u *UsersHandler) GetAllUsersHandler(w http.ResponseWriter, r *http.Request
 		errors.RespondError(w, http.StatusInternalServerError, errors.InternalServerError)
 	}
 
-	response, err := json.Marshal(users)
-	if err != nil {
-		log.Println("Marshaling error: ", err.Error())
-		errors.RespondError(w, http.StatusInternalServerError, errors.InternalServerError)
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-	w.Write(response)
+	req.Respond(w, users, http.StatusOK)
 }

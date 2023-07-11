@@ -33,14 +33,6 @@ func newRoute(method, pattern string, handler http.HandlerFunc) route {
 	return route{method, regexp.MustCompile("^" + pattern + "$"), handler}
 }
 
-func setupUserRouter(handler *handlers.UsersHandler) []route {
-	var routes = []route{
-		newRoute("GET", "/", handler.GetAllUsersHandler),
-	}
-
-	return routes
-}
-
 type route struct {
 	method  string
 	regex   *regexp.Regexp
@@ -50,10 +42,10 @@ type route struct {
 func Serve(w http.ResponseWriter, r *http.Request, appHandler *AppHandler) {
 	var allow []string
 
-	routes := []route{}
-
-	//users
-	routes = append(routes, setupUserRouter(appHandler.UsersHandler)...)
+	var routes = []route{
+		// users
+		newRoute("GET", "/", appHandler.UsersHandler.GetAllUsersHandler),
+	}
 
 	for _, route := range routes {
 		matches := route.regex.FindStringSubmatch(r.URL.Path)
