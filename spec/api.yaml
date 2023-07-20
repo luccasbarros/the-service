@@ -1,0 +1,21 @@
+openapi: 3.0.1
+info:
+  version: 1.0.0
+  title: The Service API
+  description: The Service API Documentation
+
+
+components:
+  securitySchemes:
+    $ref: "./components/SecuritySchemes.yaml"
+  responses:
+    $ref: "./components/Responses.yaml"
+  # schemas:
+
+paths:
+  # /auth/nonce:
+  #   post:
+  #     $ref: "../routes/auth/nonce/spec.yaml"
+  # /auth/login:
+  #   post:
+  #     $ref: "../routes/auth/login/spec.yaml"
