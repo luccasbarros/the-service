@@ -14,15 +14,9 @@ import (
 const paramPattern = "([^/]+)"
 const uuidPattern = "([a-fA-F0-9-]+)"
 
-type AppHandler struct {
-	UsersHandler *handlers.UsersHandler
-	// others handlers
-}
 
 func NewHandler(dal *data.Data) http.Handler {
-	appHandler := &AppHandler{
-		UsersHandler: handlers.NewUsersHandler(dal),
-	}
+	appHandler := handlers.NewAppHandler(dal)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Serve(w, r, appHandler)
@@ -39,13 +33,18 @@ type route struct {
 	handler http.HandlerFunc
 }
 
-func Serve(w http.ResponseWriter, r *http.Request, appHandler *AppHandler) {
+func Serve(w http.ResponseWriter, r *http.Request, appHandler *handlers.AppHandler) {
 	var allow []string
 
-	var routes = []route{
+	var routes = []route{		
 		// users
 		newRoute("GET", "/", appHandler.UsersHandler.GetAllUsersHandler),
 	}
+
+	// documentation UI
+	routes = append(routes, newRoute("GET", "/docs", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "../spec/redoc-static.html")
+	})))
 
 	for _, route := range routes {
 		matches := route.regex.FindStringSubmatch(r.URL.Path)
