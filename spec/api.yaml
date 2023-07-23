@@ -10,12 +10,14 @@ components:
     $ref: "./components/SecuritySchemes.yaml"
   responses:
     $ref: "./components/Responses.yaml"
-  # schemas:
+  schemas:
+    Users:
+      $ref: "./components/schemas/Users.yaml"
 
 paths:
-  # /auth/nonce:
-  #   post:
-  #     $ref: "../routes/auth/nonce/spec.yaml"
+  /auth/users:
+    get:
+      $ref: "../router/handlers/users/spec.yaml"
   # /auth/login:
   #   post:
   #     $ref: "../routes/auth/login/spec.yaml"
