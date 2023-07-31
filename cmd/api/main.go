@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/luccasbarros/the-service/internal/data"
-	"github.com/luccasbarros/the-service/router"
+	api "github.com/luccasbarros/the-service/pkg/api"
 )
 
 type API struct {
@@ -23,18 +23,18 @@ func NewApi() *API {
 
 	dal := data.New(db)
 
-	api := &API{
+	apiInstance := &API{
 		logger: log.New(os.Stdout, "[SERVER] ", log.Ldate|log.Ltime),
 	}
 
-	api.server = &http.Server{
-		Handler:           router.NewHandler(dal),
+	apiInstance.server = &http.Server{
+		Handler:           api.NewHandler(dal),
 		Addr:              "localhost:8080",
 		ReadTimeout:       10 * time.Second,
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	return api
+	return apiInstance
 }
 
 func main() {

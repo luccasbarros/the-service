@@ -2,11 +2,27 @@ package data
 
 import (
 	"context"
+	"time"
 
-	"github.com/luccasbarros/the-service/internal/dto"
+	"github.com/gofrs/uuid"
 )
 
-func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]dto.User, error) {
+type User struct {
+	Id        uuid.UUID `json:"id"`
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	Role      Role      `json:"role"`
+	CreatedAt time.Time `json:"createdAt"`
+}
+
+type Role string
+
+const (
+	AdminRole Role = "admin"
+	UserRole  Role = "user"
+)
+
+func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]User, error) {
 	offset := (page - 1) * limit
 
 	stmt := qb.
@@ -27,10 +43,10 @@ func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]dto.User
 
 	defer rows.Close()
 
-	users := make([]dto.User, 0)
+	users := make([]User, 0)
 
 	for rows.Next() {
-		var user dto.User
+		var user User
 		if err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.CreatedAt); err != nil {
 			return nil, err
 		}

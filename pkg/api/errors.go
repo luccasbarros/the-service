@@ -1,4 +1,4 @@
-package errors
+package api
 
 import (
 	"encoding/json"
@@ -13,7 +13,6 @@ type ErrorResponse struct {
 	Message    string `json:"error"`
 	StatusCode int    `json:"status"`
 }
-
 
 func RespondError(w http.ResponseWriter, statusCode int, message string) {
 	errorResponse := &ErrorResponse{

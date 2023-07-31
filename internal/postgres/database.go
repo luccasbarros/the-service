@@ -7,13 +7,13 @@ import (
 	"github.com/jackc/pgtype"
 	"github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
-	env "github.com/luccasbarros/the-service/pkg/env"
+	"github.com/luccasbarros/the-service/cmd/api/config"
 )
 
 func InitPool() (*pgxpool.Pool, error) {
 	connString := fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		env.DbUser, env.DbPassword, env.DbHost, env.DbPort, env.DbName,
+		config.Env.User, config.Env.Password, config.Env.Host, config.Env.Port, config.Env.Name,
 	)
 	poolConfig, err := pgxpool.ParseConfig(connString)
 	if err != nil {

@@ -1,4 +1,4 @@
-package router
+package api
 
 import (
 	"context"
@@ -6,17 +6,14 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/luccasbarros/the-service/internal/data"
-	"github.com/luccasbarros/the-service/pkg/errors"
-	"github.com/luccasbarros/the-service/router/handlers"
+	data "github.com/luccasbarros/the-service/internal/postgres"
 )
 
 const paramPattern = "([^/]+)"
 const uuidPattern = "([a-fA-F0-9-]+)"
 
-
 func NewHandler(dal *data.Data) http.Handler {
-	appHandler := handlers.NewAppHandler(dal)
+	appHandler := NewAppHandler(dal)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		Serve(w, r, appHandler)
@@ -33,12 +30,12 @@ type route struct {
 	handler http.HandlerFunc
 }
 
-func Serve(w http.ResponseWriter, r *http.Request, appHandler *handlers.AppHandler) {
+func Serve(w http.ResponseWriter, r *http.Request, appHandler *AppHandler) {
 	var allow []string
 
-	var routes = []route{		
+	var routes = []route{
 		// users
-		newRoute("GET", "/", appHandler.UsersHandler.GetAllUsersHandler),
+		newRoute("GET", "/", appHandler.UsersHandler.GetAllUsers),
 	}
 
 	// documentation UI
@@ -62,10 +59,10 @@ func Serve(w http.ResponseWriter, r *http.Request, appHandler *handlers.AppHandl
 
 	if len(allow) > 0 {
 		w.Header().Set("Allow", strings.Join(allow, ","))
-		errors.RespondError(w, http.StatusMethodNotAllowed, "Method not allowed")
+		RespondError(w, http.StatusMethodNotAllowed, "Method not allowed")
 	}
 
-	errors.RespondError(w, http.StatusNotFound, "Not found")
+	RespondError(w, http.StatusNotFound, "Not found")
 }
 
 type ctxKey struct{}
