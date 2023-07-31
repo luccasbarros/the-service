@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/luccasbarros/the-service/internal/data"
+	data "github.com/luccasbarros/the-service/internal/postgres"
 	api "github.com/luccasbarros/the-service/pkg/api"
 )
 
