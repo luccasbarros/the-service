@@ -9,8 +9,8 @@ import (
 	data "github.com/luccasbarros/the-service/internal/postgres"
 )
 
-const paramPattern = "([^/]+)"
-const uuidPattern = "([a-fA-F0-9-]+)"
+// const paramPattern = "([^/]+)"
+// const uuidPattern = "([a-fA-F0-9-]+)"
 
 func NewHandler(dal *data.Data) http.Handler {
 	appHandler := NewAppHandler(dal)
