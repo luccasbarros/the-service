@@ -33,3 +33,7 @@ tasks:
     dir: './spec'
     cmds:
       - redocly build-docs api.yaml
+  lint:
+    dir: '.'
+    cmds:
+      - golangci-lint run
