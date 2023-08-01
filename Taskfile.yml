@@ -1,0 +1,31 @@
+version: '3'
+
+env:
+  NAME: ""
+  
+
+tasks:
+  migrate-create:
+    cmds:
+      - echo "Creating migration"
+      - migrate create -ext sql -dir migrations/ -seq $NAME
+  migrate-up:
+    cmds:
+      - echo "Running migrate up"
+      - migrate -database "postgres://master:master@localhost:5433/service?sslmode=disable" -path migrations up
+  migrate-down:
+    cmds:
+      - echo "Running migrate down"
+      - migrate -database "postgres://master:master@localhost:5433/service?sslmode=disable" -path migrations down 1
+  up:
+    dir: '.'
+    cmds:
+      - echo "Running container"
+      - docker-compose up -d
+    silent: true
+  down:
+    dir: '.'
+    cmds:
+      - echo "Running container"
+      - docker stop the-service_db_1
+    silent: true
