@@ -29,3 +29,7 @@ tasks:
       - echo "Running container"
       - docker stop the-service_db_1
     silent: true
+  doc:
+    dir: './spec'
+    cmds:
+      - redocly build-docs api.yaml
