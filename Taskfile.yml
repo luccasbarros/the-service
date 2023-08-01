@@ -26,7 +26,7 @@ tasks:
   down:
     dir: '.'
     cmds:
-      - echo "Running container"
+      - echo "Pausing container"
       - docker stop the-service_db_1
     silent: true
   doc:
