@@ -8,7 +8,7 @@ import (
 )
 
 type User struct {
-	Id        uuid.UUID `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	Role      Role      `json:"role"`
@@ -47,7 +47,7 @@ func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]User, er
 
 	for rows.Next() {
 		var user User
-		if err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Role, &user.CreatedAt); err != nil {
+		if err := rows.Scan(&user.ID, &user.Name, &user.Email, &user.Role, &user.CreatedAt); err != nil {
 			return nil, err
 		}
 
