@@ -2,8 +2,10 @@ package data
 
 import (
 	"context"
+	sqlDb "database/sql"
 	"time"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/gofrs/uuid"
 )
 
@@ -55,4 +57,26 @@ func (ur *Data) GetAllUsers(ctx context.Context, limit, page uint64) ([]User, er
 	}
 
 	return users, nil
+}
+
+func (ur *Data) GetUser(ctx context.Context, id uuid.UUID) (*User, error) {
+	stmt := qb.Select("*").
+	From("users").
+	Where(squirrel.Eq{"id": id})
+
+	sql, args, err := stmt.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	var u User
+	err = ur.db.QueryRow(ctx, sql, args...).Scan(&u.ID, &u.Name, &u.CreatedAt, &u.Email, &u.Role)
+	if err != nil {
+		if err == sqlDb.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &u,nil
 }
