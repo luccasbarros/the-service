@@ -8,6 +8,7 @@ type DBConfig struct {
 	Name     string
 	Host     string
 	Port     string
+	Secret   string
 }
 
 var Env = DBConfig{
@@ -16,4 +17,5 @@ var Env = DBConfig{
 	Name:     os.Getenv("DB_NAME"),
 	Host:     os.Getenv("DB_HOST"),
 	Port:     os.Getenv("DB_PORT"),
+	Secret:   os.Getenv("JWT_SECRET"),
 }
