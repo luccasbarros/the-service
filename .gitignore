@@ -1,3 +1,4 @@
 .envrc
 .vscode
 docker-compose.yaml
+.env

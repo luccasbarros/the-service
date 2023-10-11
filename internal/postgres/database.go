@@ -15,6 +15,7 @@ func InitPool() (*pgxpool.Pool, error) {
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
 		config.Env.User, config.Env.Password, config.Env.Host, config.Env.Port, config.Env.Name,
 	)
+
 	poolConfig, err := pgxpool.ParseConfig(connString)
 	if err != nil {
 		return nil, err
