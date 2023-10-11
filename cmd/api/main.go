@@ -6,6 +6,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	data "github.com/luccasbarros/the-service/internal/postgres"
 	api "github.com/luccasbarros/the-service/pkg/api"
 )
@@ -39,11 +40,15 @@ func NewAPI() *API {
 }
 
 func main() {
+	err := godotenv.Load("../../.envx")
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
 	api := NewAPI()
 
 	api.logger.Println("Server is running on http://localhost:8080")
 
-	err := api.server.ListenAndServe()
+	err = api.server.ListenAndServe()
 	if err != nil {
 		api.logger.Fatalf("Error starting the server %v ", err)
 	}
